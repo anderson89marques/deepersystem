@@ -5,6 +5,7 @@ The project is running ok. Video theme is case sensitive.
 Mongo uri is the default(host: localhost, port: 27017),
 If you want, you can change it updating development.ini file replacing
 mongo_uri attribute.
+In home page has a link to list themes and theme list has a link to home page.
 
 
 Getting Started
