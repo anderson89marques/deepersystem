@@ -28,7 +28,7 @@
 {% if videos %}
     <ul>
     {% for video in videos %}
-        <li>name: {{video['name']}}, theme: {{video['theme']}}, <button id="{{video['id']}}" class='thumbs'>Thumbs up</button> 
+        <li>name: {{video['name']}}, theme: {{video['theme']}}, <button id="{{video['_id']}}" class='thumbs'>Thumbs up</button> 
     {% endfor %}
     </ul>
 {% else %}

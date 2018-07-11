@@ -34,5 +34,6 @@ def main(global_config, **settings):
     config.add_request_method(add_fs, 'fs', reify=True)
 
     config.add_route('home', '/')
+    config.add_route('create', '/create')
     config.scan()
     return config.make_wsgi_app()
