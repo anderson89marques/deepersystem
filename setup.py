@@ -9,6 +9,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
+    'deform',
     'plaster_pastedeploy',
     'pyramid',
     'pyramid_jinja2',
@@ -47,7 +48,7 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = mongo_with_pyramid:main',
+            'main = themes_attention:main',
         ],
     },
 )
