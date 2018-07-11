@@ -2,6 +2,8 @@ import colander
 import deform
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
+from bson.objectid import ObjectId
+import pprint
 
 
 class VideoPage(colander.MappingSchema):
@@ -46,11 +48,23 @@ class VideoViews:
         for video in self.request.db.videos.find():
             video['_id'] = str(video['_id'])
             videos.append(video)
-            print(str(video['_id']))
+            #print(str(video['_id']))
         return videos
 
-    #@view_config(route_name='create')
-    #def create_video(self):
+    @view_config(route_name='thumbs_attent', request_method="POST")
+    def thumbs_attention(self):
+        print(self.request.POST)
+        _id = self.request.POST['_id']
+        video = self.request.db.videos.find_one({'_id': ObjectId(_id)})
+        pprint.pprint(video)
+        if 'thumbs_up' in self.request.POST:
+            thumbs_up = int(self.request.POST['thumbs_up'])
+            resp = self.request.db.videos.update_one({'_id': ObjectId(_id)}, {'$set': {'thumbs_up': video['thumbs_up'] + thumbs_up }})
+            pprint.pprint(resp)
+        else:
+            thumbs_down = int(self.request.POST['thumbs_down'])
+            resp = self.request.db.videos.update_one({'_id': ObjectId(_id)}, {'$set': {'thumbs_down': video['thumbs_down'] + thumbs_down }})
+            pprint.pprint(resp)
     #    if 'submit' in self.request.params:
     #        controls = self.request.POST.items()
     #        try:
@@ -59,8 +73,9 @@ class VideoViews:
     #            # Form is NOT valid
     #            return dict(form=e.render())
     #    print(appstruct['name'], appstruct['theme'])
-    #    url = self.request.route_url('home')
-    #    return HTTPFound(url)  
+        
+        url = self.request.route_url('home')
+        return HTTPFound(url)  
 
 #@view_config(route_name='home', renderer='json')
 #def my_view(request):

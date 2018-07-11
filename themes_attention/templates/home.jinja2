@@ -28,7 +28,11 @@
 {% if videos %}
     <ul>
     {% for video in videos %}
-        <li>name: {{video['name']}}, theme: {{video['theme']}}, <button id="{{video['_id']}}" class='thumbs'>Thumbs up</button> 
+        <li>name: {{video['name']}}, theme: {{video['theme']}}, 
+           <button id="{{video['_id']}}" class='thumbs'>Thumbs up</button>,
+           thumbs_up: <div id="thumbs_up{{video['_id']}}">{{video['thumbs_up']}}</div>, 
+           thumbs_down: <div id="thumbs_down{{video['_id']}}">{{video['thumbs_down']}}</div>
+        </li> 
     {% endfor %}
     </ul>
 {% else %}
