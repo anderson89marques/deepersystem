@@ -31,14 +31,14 @@
     <ul>
     {% for video in videos %}
         <li>name: {{video['name']}}, theme: {{video['theme']}}, 
-           <button id="{{video['_id']}}" class='thumbs'>Thumbs up</button>,
+           <button id="{{video['_id']}}" class='thumbs'>{{video['thumbs_msg']}}</button>,
            thumbs_up: <div id="thumbs_up{{video['_id']}}">{{video['thumbs_up']}}</div>, 
            thumbs_down: <div id="thumbs_down{{video['_id']}}">{{video['thumbs_down']}}</div>
         </li> 
     {% endfor %}
     </ul>
 {% else %}
-    <h2>No Videos. Create videos below</h2>
+    <h2>No Videos. Create a video below</h2>
 {% endif %}
 <hr>
 

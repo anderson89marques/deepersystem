@@ -1,9 +1,8 @@
 import colander
 import deform
-from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
 from bson.objectid import ObjectId
-import pprint
+from pyramid.httpexceptions import HTTPFound
+from pyramid.view import view_config
 
 
 class VideoPage(colander.MappingSchema):
@@ -19,7 +18,7 @@ class VideoViews:
     def home_form(self):
         schema = VideoPage()
         return deform.Form(schema, buttons=('submit',))
-    
+
     @property
     def reqts(self):
         return self.home_form.get_widget_resources()
@@ -34,15 +33,15 @@ class VideoViews:
             except deform.ValidationFailure as e:
                 # Form is NOT valid
                 return dict(form=e.render())
-            print(appstruct['name'], appstruct['theme'])
-            video = self.request.db.videos.insert_one({'name': appstruct['name'], 
+            video = self.request.db.videos.insert_one({'name': appstruct['name'],
                                                        'theme': appstruct['theme'],
                                                        'thumbs_up': 0,
-                                                       'thumbs_down': 0})
+                                                       'thumbs_down': 0,
+                                                       'thumbs_msg': 'Thumbs up'})
             self.create_theme_if_not_exists(appstruct['theme'])
-            
-        return dict(form=form, videos=self.videos) 
-    
+
+        return dict(form=form, videos=self.videos)
+
     @property
     def videos(self):
         videos = []
@@ -55,35 +54,40 @@ class VideoViews:
     def thumbs_attention(self):
         _id = self.request.POST['_id']
         video = self.request.db.videos.find_one({'_id': ObjectId(_id)})
-        pprint.pprint(video)
         if 'thumbs_up' in self.request.POST:
             thumbs_up = int(self.request.POST['thumbs_up'])
-            resp = self.request.db.videos.update_one({'_id': ObjectId(_id)}, {'$set': {'thumbs_up': video['thumbs_up'] + thumbs_up }})
-            pprint.pprint(resp)
+            resp = self.request.db.videos.update_one({'_id': ObjectId(_id)},
+                                                     {'$set': {'thumbs_up': video['thumbs_up'] + thumbs_up,
+                                                               'thumbs_msg': 'Thumbs down'}})
         else:
             thumbs_down = int(self.request.POST['thumbs_down'])
-            resp = self.request.db.videos.update_one({'_id': ObjectId(_id)}, {'$set': {'thumbs_down': video['thumbs_down'] + thumbs_down }})
-            pprint.pprint(resp)
+            resp = self.request.db.videos.update_one({'_id': ObjectId(_id)},
+                                                     {'$set': {'thumbs_down': video['thumbs_down'] + thumbs_down,
+                                                               'thumbs_msg': 'Thumbs up'}})
 
         self.update_theme_score(video['theme'])
-        
+
         url = self.request.route_url('home')
         return HTTPFound(url)
-    
+
     def create_theme_if_not_exists(self, theme_name):
         """Theme is case sensitive"""
         theme = self.request.db.themes.find_one({'name': theme_name})
         if not theme:
             print("insering theme")
             self.request.db.themes.insert_one({'name': theme_name, 'score': 0})
-    
+
     def update_theme_score(self, theme):
-        videos = self.request.db.videos.find({'theme': theme}, {'thumbs_up': 1, 'thumbs_down': 1})
-        scores = [(video['thumbs_up'] - (video['thumbs_down']/2)) for video in videos]
+        videos = self.request.db.videos.find(
+            {'theme': theme}, {'thumbs_up': 1, 'thumbs_down': 1})
+        scores = [(video['thumbs_up'] - (video['thumbs_down']/2))
+                  for video in videos]
         score = sum(scores)
-        self.request.db.themes.update_one({'name': theme}, {'$set': {'score': score}})
+        self.request.db.themes.update_one(
+            {'name': theme}, {'$set': {'score': score}})
 
     @view_config(route_name='list_themes', renderer="templates/list_themes.jinja2")
     def list_themes(self):
-        themes = self.request.db.themes.find({'$query': {}, '$orderby': { 'score' : -1 }})
+        themes = self.request.db.themes.find(
+            {'$query': {}, '$orderby': {'score': -1}})
         return {'themes': list(themes)}
