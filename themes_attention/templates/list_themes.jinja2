@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home</title>
+</head>
+<body>
+    <a href="{{request.route_url('home')}}"> HOME</a>
+    <hr>
+    <h1>Themes</h1>
+    {% if themes %}
+        <ul>
+        {% for theme in themes %}
+            <li>name: {{theme['name']}}, score: {{theme['score']}}</li> 
+        {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No theme. You need create videos in home page</h2>
+    {% endif %}
+</body>
+</html>

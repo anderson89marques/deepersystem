@@ -24,6 +24,8 @@
     {% endfor %}
 </head>
 <body>
+ <a href="{{request.route_url('list_themes')}}">List Themes  </a>
+<hr>
 <h1>Videos</h1>
 {% if videos %}
     <ul>
@@ -36,7 +38,7 @@
     {% endfor %}
     </ul>
 {% else %}
-    <h2>No vVdeos. Create videos below</h2>
+    <h2>No Videos. Create videos below</h2>
 {% endif %}
 <hr>
 
